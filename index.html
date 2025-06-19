@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Combined Performance Data</title>
+    <title>Kombinierte Leistungsdaten</title>
     <style>
         /* --- General Styling --- */
         :root {
@@ -112,7 +112,7 @@
                 gap: 0.25rem;
                 justify-content: flex-start; /* Align to start on very small screens */
             }
-            
+
             .tab-button {
                 padding: 0.4rem 0.8rem;
                 font-size: 0.85rem;
@@ -273,7 +273,7 @@
 
     <header class="main-header">
         <h1>U12</h1>
-        <p class="header-subtitle">Performance Data & Analysis</p>
+        <p class="header-subtitle">Leistungsdaten & Analyse</p>
     </header>
 
     <main id="container" class="container">
@@ -328,7 +328,7 @@ Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3`;
         function createBentOverview(datasets) {
             const bentData = {
                 title: "Bent",
-                headers: ['Test', 'Measurement', 'Value', 'Rank'],
+                headers: ['Test', 'Messung', 'Wert', 'Rang'],
                 data: []
             };
 
@@ -362,13 +362,12 @@ Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3`;
                         const ohneBall = parseFloat(bentEntry.ohne_Ball);
                         const mitBall = parseFloat(bentEntry.mit_Ball);
                         if (!isNaN(ohneBall) && !isNaN(mitBall)) {
-                            const percentDifference = (((mitBall - ohneBall) / ohneBall) * 100).toFixed(1);
-                            bentData.data.push({
-                                Test: dataset.title.split(' (')[0],
-                                Measurement: 'Ball Impact (%)',
-                                Value: `+${percentDifference}%`,
-                                Rank: '-'
-                            });
+                            const percentDifference = (((mitBall - ohneBall) / ohneBall) * 100).toFixed(1);                                bentData.data.push({
+                                    Test: dataset.title.split(' (')[0],
+                                    Messung: 'Ball-Einfluss (%)',
+                                    Wert: `+${percentDifference}%`,
+                                    Rang: '-'
+                                });
                         }
                     }
                 }
@@ -386,20 +385,20 @@ Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3`;
                     if (!isNaN(t5) && t5 > 0) {
                         const acceleration = ((2 * 5) / (t5 * t5)).toFixed(2);
                         bentData.data.push({
-                            Test: 'Speed Analysis',
-                            Measurement: 'Acceleration (m/s²)',
-                            Value: acceleration,
-                            Rank: "-"
+                            Test: 'Geschwindigkeits-Analyse',
+                            Messung: 'Beschleunigung (m/s²)',
+                            Wert: acceleration,
+                            Rang: "-"
                         });
                     }
 
                     if (!isNaN(t15) && !isNaN(t30) && t30 > t15) {
                         const topSpeed = (((30 - 15) / (t30 - t15)) * 3.6).toFixed(2);
                         bentData.data.push({
-                            Test: 'Speed Analysis',
-                            Measurement: 'Top Speed (km/h)',
-                            Value: topSpeed,
-                            Rank: "-"
+                            Test: 'Geschwindigkeits-Analyse',
+                            Messung: 'Höchstgeschwindigkeit (km/h)',
+                            Wert: topSpeed,
+                            Rang: "-"
                         });
                     }
                 }
@@ -420,10 +419,10 @@ Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3`;
                     if (!isNaN(flyingTime5m) && !isNaN(standingTime5m)) {
                         const reactionTime = ((standingTime5m - flyingTime5m) * 1000).toFixed(0); // Convert to milliseconds
                         bentData.data.push({
-                            Test: 'Reaction Analysis',
-                            Measurement: 'Reaction Time (ms)',
-                            Value: `${reactionTime}ms`,
-                            Rank: "-"
+                            Test: 'Reaktions-Analyse',
+                            Messung: 'Reaktionszeit (ms)',
+                            Wert: `${reactionTime}ms`,
+                            Rang: "-"
                         });
                     }
                 }
@@ -575,7 +574,7 @@ Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3`;
                 dataset.headers.forEach((header, index) => {
                     const td = document.createElement('td');
                     if (index === 0) {
-                        td.textContent = 'Average';
+                        td.textContent = 'Durchschnitt';
                     } else {
                         td.textContent = calculateAverage(dataset.data.map(row => row[header]));
                     }
@@ -597,7 +596,7 @@ Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3`;
 
             const notesContainer = document.createElement('div');
             notesContainer.className = 'notes-container';
-            notesContainer.innerHTML = `<p class="note"><b>Note:</b> Speed analysis metrics in Bent's tab assume a standing start (0 km/h).</p>`;
+            notesContainer.innerHTML = `<p class="note"><b>Hinweis:</b> Die Geschwindigkeits-Analysewerte in Bents Tab gehen von einem stehenden Start (0 km/h) aus.</p>`;
             container.appendChild(notesContainer);
 
             createTabsNavigation(container, displayDatasets);
