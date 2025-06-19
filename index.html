@@ -573,11 +573,6 @@ Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3`;
             // Hide Bent tab for now - only show original datasets
             const displayDatasets = [...originalDatasets];
 
-            const notesContainer = document.createElement('div');
-            notesContainer.className = 'notes-container';
-            notesContainer.innerHTML = `<p class="note"><b>Hinweis:</b> Die Geschwindigkeits-Analysewerte in Bents Tab gehen von einem stehenden Start (0 km/h) aus.</p>`;
-            container.appendChild(notesContainer);
-
             createTabsNavigation(container, displayDatasets);
 
             displayDatasets.forEach((dataset, index) => {
