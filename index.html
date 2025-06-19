@@ -16,6 +16,11 @@
             --accent-color: #007bff;
             --hover-bg: #f0f8ff;
             --shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            --average-bg: #f0f7ff;
+            --average-text: #0066cc;
+            --tab-active-bg: #ffffff;
+            --tab-inactive-bg: #f0f0f0;
+            --tab-hover-bg: #e0e0e0;
         }
 
         body {
@@ -44,10 +49,55 @@
         /* --- Main Content Layout --- */
         .container {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 2rem;
+            flex-direction: column;
+            align-items: center;
             padding: 2rem;
+        }
+
+        /* Tabs Navigation */
+        .tabs-nav {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            width: 100%;
+            max-width: 800px;
+            overflow-x: auto;
+            padding: 0.5rem;
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--tab-inactive-bg);
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .tab-button:hover {
+            background-color: var(--tab-hover-bg);
+        }
+
+        .tab-button.active {
+            background-color: var(--tab-active-bg);
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         /* --- Card Styling for each table --- */
@@ -56,19 +106,12 @@
             border-radius: 12px;
             box-shadow: var(--shadow);
             padding: 1.5rem;
-            flex: 1 1 400px; /* Flex properties for responsive columns */
-            min-width: 320px;
-            max-width: 600px;
-            overflow-x: auto; /* Allows horizontal scrolling on small screens if table is too wide */
+            width: 100%;
+            overflow-x: auto;
         }
 
         .data-card h2 {
-            margin-top: 0;
-            margin-bottom: 1rem;
-            font-size: 1.25rem;
-            color: var(--text-light);
-            border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 0.5rem;
+            display: none; /* Hide the title since it's now in the tab */
         }
 
         /* --- Table Styling --- */
@@ -78,10 +121,44 @@
             font-size: 0.95rem;
         }
 
+        .rank-column {
+            width: 40px;
+            text-align: center;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
         th, td {
             padding: 0.8rem 1rem;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:hover {
+            background-color: #dde5eb;
+        }
+
+        th::after {
+            content: '⇅';
+            position: absolute;
+            right: 8px;
+            opacity: 0.3;
+        }
+
+        th.sort-asc::after {
+            content: '↑';
+            opacity: 1;
+        }
+
+        th.sort-desc::after {
+            content: '↓';
+            opacity: 1;
         }
 
         thead th {
@@ -98,7 +175,18 @@
         td {
             color: var(--text-light);
         }
-        
+
+        /* Average row styling */
+        tfoot tr {
+            background-color: var(--average-bg);
+            font-weight: 600;
+        }
+
+        tfoot td {
+            color: var(--average-text) !important;
+            border-top: 2px solid var(--border-color);
+        }
+
         /* Handle special values like 'Ausfall' */
         td.ausfall {
             color: #d9534f;
@@ -112,10 +200,14 @@
             }
             .container {
                 padding: 1rem;
-                gap: 1rem;
             }
-            .data-card {
-                flex-basis: 100%; /* Each card takes full width */
+            .tabs-nav {
+                padding: 0.5rem;
+                margin-bottom: 1rem;
+            }
+            .tab-button {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -123,7 +215,7 @@
 <body>
 
     <header class="main-header">
-        <h1>Combined Performance Data</h1>
+        <h1>U12</h1>
     </header>
 
     <main id="container" class="container">
@@ -132,8 +224,8 @@
 
     <script>
         // Raw CSV data embedded in a template literal
-        const csvData = `Geschicklichkeit (18.06.2025),,,,Test: Sprint - Flying Start (14.07.2014),,,,,,Test: Sprint - Standing Start (14.07.2014),,,,
-Name,o_Ball,m_Ball,,Name,5m,10m,15m,30m,,Name,5m,10m,15m,30m
+        const csvData = `Geschicklichkeit (18.06.2025),,,,Sprint - Flying Start (14.07.2014),,,,Sprint - Standing Start (14.07.2014),,,,
+Name,ohne_Ball,mit_Ball,,Name,5m,10m,15m,30m,,Name,5m,10m,15m,30m
 Bent,14.63,,,Bent,1.36,2.12,2.87,4.34,,Bent,1.49,2.71,2.92,4.83
 Berkay,14.87,20.77,,Ricky,1.4,2.2,2.86,4.34,,Ricky,1.55,2.69,2.95,4.88
 Ricky,14.98,22.06,,Eladji,1.38,2.21,2.87,4.35,,Eladji,1.52,2.74,2.89,5
@@ -148,7 +240,7 @@ Ilyas,16.25,21.21,,Noan,1.46,2.24,3.17,4.69,,Noan,1.62,2.88,3.19,5.28
 Ibo,,22.53,,Ben,1.48,2.28,3.13,4.74,,Ben,1.61,2.73,3.1,5.05
 Ben,,22.71,,Ibo,1.46,2.27,3.15,4.76,,Ibo,Ausfall,,3.24,5.28
 Max,,22.36,,Max,1.5,2.32,3.14,4.76,,Max,1.63,2.82,3.22,5.25
-Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3create`;
+Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3`;
 
         /**
          * Parses the raw CSV string and organizes it into structured data objects.
@@ -183,6 +275,133 @@ Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3create`;
         }
 
         /**
+         * Calculates the average of numeric values in an array, ignoring non-numeric and 'Ausfall' values
+         * @param {array} values - Array of values to average
+         * @returns {string} - Formatted average or empty string if no valid numbers
+         */
+        function calculateAverage(values) {
+            const numericValues = values
+                .filter(v => v && v.toLowerCase() !== 'ausfall')
+                .map(v => parseFloat(v))
+                .filter(n => !isNaN(n));
+
+            if (numericValues.length === 0) return '';
+
+            const avg = numericValues.reduce((a, b) => a + b) / numericValues.length;
+            return avg.toFixed(2);
+        }
+
+        /**
+         * Compare two values for sorting, handling special cases
+         * @param {string} a - First value
+         * @param {string} b - Second value
+         * @returns {number} - Comparison result (-1, 0, or 1)
+         */
+        function compareValues(a, b) {
+            // Handle empty values and 'Ausfall'
+            if (!a && !b) return 0;
+            if (!a || a.toLowerCase() === 'ausfall') return 1;
+            if (!b || b.toLowerCase() === 'ausfall') return -1;
+
+            // Try numeric comparison first
+            const numA = parseFloat(a);
+            const numB = parseFloat(b);
+            if (!isNaN(numA) && !isNaN(numB)) {
+                return numA - numB;
+            }
+
+            // Fall back to string comparison
+            return a.toString().localeCompare(b.toString());
+        }
+
+        /**
+         * Updates the ranking numbers in a table
+         * @param {HTMLTableElement} table - The table element
+         */
+        function updateRankings(table) {
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            rows.forEach((row, index) => {
+                row.cells[0].textContent = (index + 1) + '.';
+            });
+        }
+
+        /**
+         * Sort table data by a specific column
+         * @param {HTMLTableElement} table - The table element
+         * @param {number} columnIndex - Index of the column to sort by
+         * @param {boolean} asc - Sort in ascending order if true
+         */
+        function sortTable(table, columnIndex, asc) {
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+
+            // Adjust columnIndex to account for ranking column
+            const sortColumnIndex = columnIndex + 1;
+
+            // Update header sort indicators
+            const headers = table.querySelectorAll('th');
+            headers.forEach(header => {
+                header.classList.remove('sort-asc', 'sort-desc');
+            });
+            headers[columnIndex].classList.add(asc ? 'sort-asc' : 'sort-desc');
+
+            // Sort the rows
+            rows.sort((rowA, rowB) => {
+                const cellA = rowA.cells[sortColumnIndex].textContent;
+                const cellB = rowB.cells[sortColumnIndex].textContent;
+                return (asc ? 1 : -1) * compareValues(cellA, cellB);
+            });
+
+            // Remove existing rows and append sorted ones
+            while (tbody.firstChild) {
+                tbody.removeChild(tbody.firstChild);
+            }
+            rows.forEach(row => tbody.appendChild(row));
+
+            // Update rankings after sort
+            updateRankings(table);
+        }
+
+        /**
+         * Switch to a specific tab
+         * @param {string} testName - The name of the test/tab to switch to
+         */
+        function switchTab(testName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.toggle('active', button.dataset.test === testName);
+            });
+
+            // Update tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.toggle('active', content.dataset.test === testName);
+            });
+        }
+
+        /**
+         * Creates the tabbed navigation
+         * @param {HTMLElement} container - The container element
+         * @param {Array} datasets - The array of test datasets
+         */
+        function createTabsNavigation(container, datasets) {
+            const tabsNav = document.createElement('div');
+            tabsNav.className = 'tabs-nav';
+
+            // Create tab buttons for each test
+            datasets.forEach((dataset, index) => {
+                const button = document.createElement('button');
+                button.className = 'tab-button' + (index === 0 ? ' active' : '');
+                button.textContent = dataset.title.split(' (')[0]; // Remove date from tab name
+                button.dataset.test = dataset.title;
+                button.addEventListener('click', () => switchTab(dataset.title));
+                tabsNav.appendChild(button);
+            });
+
+            container.appendChild(tabsNav);
+        }
+
+        /**
          * Creates and appends a data table inside a card to the specified container.
          * @param {HTMLElement} container - The DOM element to append the card to.
          * @param {object} dataset - The structured data object for the table.
@@ -192,20 +411,32 @@ Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3create`;
             const card = document.createElement('div');
             card.className = 'data-card';
 
-            // Create title
-            const title = document.createElement('h2');
-            title.textContent = dataset.title;
-            card.appendChild(title);
-
             // Create table
             const table = document.createElement('table');
-            
-            // Create table header
+
+            // Create table header with sorting
             const thead = document.createElement('thead');
             const headerRow = document.createElement('tr');
-            dataset.headers.forEach(headerText => {
+
+            // Add ranking column header
+            const rankHeader = document.createElement('th');
+            rankHeader.textContent = '#';
+            rankHeader.className = 'rank-column';
+            rankHeader.style.cursor = 'default';
+            rankHeader.style.width = '40px';
+            headerRow.appendChild(rankHeader);
+
+            // Add other headers
+            dataset.headers.forEach((headerText, index) => {
                 const th = document.createElement('th');
                 th.textContent = headerText.replace(/_/g, ' '); // Replace underscores for display
+
+                // Add click handler for sorting
+                th.addEventListener('click', () => {
+                    const currentIsAsc = th.classList.contains('sort-asc');
+                    sortTable(table, index, !currentIsAsc);
+                });
+
                 headerRow.appendChild(th);
             });
             thead.appendChild(headerRow);
@@ -213,8 +444,16 @@ Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3create`;
 
             // Create table body
             const tbody = document.createElement('tbody');
-            dataset.data.forEach(rowData => {
+            dataset.data.forEach((rowData, rowIndex) => {
                 const row = document.createElement('tr');
+
+                // Add ranking column
+                const rankCell = document.createElement('td');
+                rankCell.textContent = (rowIndex + 1) + '.';
+                rankCell.className = 'rank-column';
+                row.appendChild(rankCell);
+
+                // Add data columns
                 dataset.headers.forEach(header => {
                     const td = document.createElement('td');
                     const value = rowData[header];
@@ -227,20 +466,101 @@ Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3create`;
                 tbody.appendChild(row);
             });
             table.appendChild(tbody);
-            card.appendChild(table);
 
-            // Append the complete card to the main container
+            // Create table footer with averages (only for test result tables, not for Bent's overview)
+            if (dataset.data.length > 0 && dataset.title !== "Bent's Overview") {
+                const tfoot = document.createElement('tfoot');
+                const averageRow = document.createElement('tr');
+
+                // Add empty cell for ranking column
+                const rankCell = document.createElement('td');
+                rankCell.className = 'rank-column';
+                averageRow.appendChild(rankCell);
+
+                dataset.headers.forEach((header, index) => {
+                    const td = document.createElement('td');
+                    if (index === 0) {
+                        td.textContent = 'Average';
+                    } else {
+                        // Calculate average for numeric columns
+                        const values = dataset.data.map(row => row[header]);
+                        td.textContent = calculateAverage(values);
+                    }
+                    averageRow.appendChild(td);
+                });
+
+                tfoot.appendChild(averageRow);
+                table.appendChild(tfoot);
+            }
+
+            card.appendChild(table);
             container.appendChild(card);
+        }
+
+        /**
+         * Creates a combined dataset of Bent's results
+         * @param {Array} datasets - The original datasets
+         * @returns {Object} - Dataset with Bent's combined results
+         */
+        function createBentOverview(datasets) {
+            const bentData = {
+                title: "Bent's Overview",
+                headers: ['Test', 'Measurement', 'Value', 'Rank'],
+                data: []
+            };
+
+            datasets.forEach(dataset => {
+                // Find Bent's data in this test
+                const bentEntry = dataset.data.find(entry => entry.Name === 'Bent');
+                if (bentEntry) {
+                    // Get all measurements except Name
+                    Object.entries(bentEntry).forEach(([key, value]) => {
+                        if (key !== 'Name' && value) {
+                            // Find Bent's rank for this measurement
+                            const allValues = dataset.data
+                                .map(entry => entry[key])
+                                .filter(v => v && v.toLowerCase() !== 'ausfall')
+                                .map(v => parseFloat(v))
+                                .filter(n => !isNaN(n))
+                                .sort((a, b) => a - b);
+
+                            const rank = allValues.indexOf(parseFloat(value)) + 1;
+                            const total = allValues.length;
+
+                            bentData.data.push({
+                                Test: dataset.title.split(' (')[0],
+                                Measurement: key.replace(/_/g, ' '),
+                                Value: value,
+                                Rank: `${rank}/${total}`
+                            });
+                        }
+                    });
+                }
+            });
+
+            return bentData;
         }
 
         // Main execution logic
         document.addEventListener('DOMContentLoaded', () => {
             const container = document.getElementById('container');
             const datasets = parseData(csvData);
-            
-            datasets.forEach(dataset => {
+
+            // Create Bent's overview dataset
+            const bentOverview = createBentOverview(datasets);
+            datasets.unshift(bentOverview); // Add Bent's overview as the first dataset
+
+            // Create tabs navigation
+            createTabsNavigation(container, datasets);
+
+            // Create tab content for each dataset
+            datasets.forEach((dataset, index) => {
                 if (dataset.data.length > 0) {
-                    createTableCard(container, dataset);
+                    const tabContent = document.createElement('div');
+                    tabContent.className = 'tab-content' + (index === 0 ? ' active' : '');
+                    tabContent.dataset.test = dataset.title;
+                    createTableCard(tabContent, dataset);
+                    container.appendChild(tabContent);
                 }
             });
         });
