@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combined Performance Data</title>
+    <style>
+        /* --- General Styling --- */
+        :root {
+            --primary-bg: #f4f7f9;
+            --card-bg: #ffffff;
+            --header-bg: #e9eef2;
+            --text-color: #333333;
+            --text-light: #555555;
+            --border-color: #e1e1e1;
+            --accent-color: #007bff;
+            --hover-bg: #f0f8ff;
+            --shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* --- Header --- */
+        .main-header {
+            background-color: var(--card-bg);
+            padding: 1.5rem 2rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+
+        .main-header h1 {
+            margin: 0;
+            font-size: 2rem;
+            color: var(--text-color);
+        }
+
+        /* --- Main Content Layout --- */
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        /* --- Card Styling for each table --- */
+        .data-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            flex: 1 1 400px; /* Flex properties for responsive columns */
+            min-width: 320px;
+            max-width: 600px;
+            overflow-x: auto; /* Allows horizontal scrolling on small screens if table is too wide */
+        }
+
+        .data-card h2 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            color: var(--text-light);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 0.5rem;
+        }
+
+        /* --- Table Styling --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 0.8rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        thead th {
+            background-color: var(--header-bg);
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: capitalize;
+        }
+
+        tbody tr:hover {
+            background-color: var(--hover-bg);
+        }
+
+        td {
+            color: var(--text-light);
+        }
+        
+        /* Handle special values like 'Ausfall' */
+        td.ausfall {
+            color: #d9534f;
+            font-style: italic;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            .main-header h1 {
+                font-size: 1.5rem;
+            }
+            .container {
+                padding: 1rem;
+                gap: 1rem;
+            }
+            .data-card {
+                flex-basis: 100%; /* Each card takes full width */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <h1>Combined Performance Data</h1>
+    </header>
+
+    <main id="container" class="container">
+        <!-- Data cards will be dynamically inserted here by JavaScript -->
+    </main>
+
+    <script>
+        // Raw CSV data embedded in a template literal
+        const csvData = `Geschicklichkeit (18.06.2025),,,,Test: Sprint - Flying Start (14.07.2014),,,,,,Test: Sprint - Standing Start (14.07.2014),,,,
+Name,o_Ball,m_Ball,,Name,5m,10m,15m,30m,,Name,5m,10m,15m,30m
+Bent,14.63,,,Bent,1.36,2.12,2.87,4.34,,Bent,1.49,2.71,2.92,4.83
+Berkay,14.87,20.77,,Ricky,1.4,2.2,2.86,4.34,,Ricky,1.55,2.69,2.95,4.88
+Ricky,14.98,22.06,,Eladji,1.38,2.21,2.87,4.35,,Eladji,1.52,2.74,2.89,5
+Moritz,15.09,,,Berkay,1.42,2.21,2.89,4.43,,Berkay,1.59,2.86,3.05,5.24
+Lorent,15.1,20.85,,Seyit,1.39,2.17,2.9,4.43,,Seyit,1.53,2.73,2.92,4.94
+Noan,15.15,21.3,,Moritz,1.39,2.19,2.99,4.52,,Moritz,1.59,2.9,3.06,5.19
+Eladji,15.58,21.85,,Lorent,1.48,2.21,3.01,4.53,,Lorent,1.56,2.83,3.08,5.16
+Bob,15.69,21.73,,Theo,1.49,2.26,3.01,4.55,,Theo,1.58,2.75,3.07,5.13
+Seyit,15.78,22.01,,Ilyas,1.47,2.27,3.05,4.65,,Ilyas,1.61,2.85,3.22,5.21
+Florian,16.09,22.19,,Bob,1.46,2.23,3.07,4.69,,Bob,1.61,2.83,3.24,5.36
+Ilyas,16.25,21.21,,Noan,1.46,2.24,3.17,4.69,,Noan,1.62,2.88,3.19,5.28
+Ibo,,22.53,,Ben,1.48,2.28,3.13,4.74,,Ben,1.61,2.73,3.1,5.05
+Ben,,22.71,,Ibo,1.46,2.27,3.15,4.76,,Ibo,Ausfall,,3.24,5.28
+Max,,22.36,,Max,1.5,2.32,3.14,4.76,,Max,1.63,2.82,3.22,5.25
+Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3create`;
+
+        /**
+         * Parses the raw CSV string and organizes it into structured data objects.
+         */
+        function parseData(csv) {
+            const lines = csv.trim().split('\n');
+            const titles = lines[0].split(',,,,').map(t => t.trim()).filter(Boolean);
+            const headerLine = lines[1].split(',');
+
+            const datasets = [
+                { title: titles[0], headers: headerLine.slice(0, 3).filter(h => h), data: [], colSlice: [0, 3] },
+                { title: titles[1], headers: headerLine.slice(4, 9).filter(h => h), data: [], colSlice: [4, 9] },
+                { title: titles[2], headers: headerLine.slice(10, 15).filter(h => h), data: [], colSlice: [10, 15] }
+            ];
+
+            const dataLines = lines.slice(2);
+
+            dataLines.forEach(line => {
+                const values = line.split(',');
+                datasets.forEach(dataset => {
+                    const rowValues = values.slice(dataset.colSlice[0], dataset.colSlice[1]);
+                    if (rowValues[0] && rowValues[0].trim()) { // Check if there's a name in the first column
+                        const rowObject = {};
+                        dataset.headers.forEach((header, index) => {
+                            rowObject[header] = rowValues[index] || '';
+                        });
+                        dataset.data.push(rowObject);
+                    }
+                });
+            });
+            return datasets;
+        }
+
+        /**
+         * Creates and appends a data table inside a card to the specified container.
+         * @param {HTMLElement} container - The DOM element to append the card to.
+         * @param {object} dataset - The structured data object for the table.
+         */
+        function createTableCard(container, dataset) {
+            // Create card container
+            const card = document.createElement('div');
+            card.className = 'data-card';
+
+            // Create title
+            const title = document.createElement('h2');
+            title.textContent = dataset.title;
+            card.appendChild(title);
+
+            // Create table
+            const table = document.createElement('table');
+            
+            // Create table header
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            dataset.headers.forEach(headerText => {
+                const th = document.createElement('th');
+                th.textContent = headerText.replace(/_/g, ' '); // Replace underscores for display
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // Create table body
+            const tbody = document.createElement('tbody');
+            dataset.data.forEach(rowData => {
+                const row = document.createElement('tr');
+                dataset.headers.forEach(header => {
+                    const td = document.createElement('td');
+                    const value = rowData[header];
+                    td.textContent = value;
+                    if (value.toLowerCase() === 'ausfall') {
+                        td.className = 'ausfall';
+                    }
+                    row.appendChild(td);
+                });
+                tbody.appendChild(row);
+            });
+            table.appendChild(tbody);
+            card.appendChild(table);
+
+            // Append the complete card to the main container
+            container.appendChild(card);
+        }
+
+        // Main execution logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('container');
+            const datasets = parseData(csvData);
+            
+            datasets.forEach(dataset => {
+                if (dataset.data.length > 0) {
+                    createTableCard(container, dataset);
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
