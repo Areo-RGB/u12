@@ -34,7 +34,7 @@
         /* --- Header --- */
         .main-header {
             background-color: var(--card-bg);
-            padding: 1.5rem 2rem;
+            padding: 1.5rem 1rem; /* Mobile padding */
             text-align: center;
             border-bottom: 1px solid var(--border-color);
             box-shadow: var(--shadow);
@@ -42,8 +42,15 @@
 
         .main-header h1 {
             margin: 0;
-            font-size: 2rem;
+            font-size: 1.5rem; /* Mobile font size */
             color: var(--text-color);
+        }
+
+        .main-header p.header-subtitle {
+            margin: 0.25rem 0 0;
+            font-size: 1rem;
+            color: var(--text-light);
+            font-weight: 400;
         }
 
         /* --- Main Content Layout --- */
@@ -51,28 +58,45 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 2rem;
+            padding: 1rem; /* Mobile padding */
+        }
+
+        .notes-container {
+            width: 100%;
+            max-width: 1200px;
+            margin-bottom: 1rem;
+        }
+
+        .note {
+            display: inline-block;
+            background-color: var(--average-bg);
+            color: var(--average-text);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin: 0;
+            text-align: center;
         }
 
         /* Tabs Navigation */
         .tabs-nav {
             display: flex;
             gap: 0.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem; /* Mobile margin */
             width: 100%;
-            max-width: 800px;
+            max-width: 1200px;
             overflow-x: auto;
-            padding: 0.5rem;
+            padding: 0.5rem 0;
         }
 
         .tab-button {
-            padding: 0.75rem 1.5rem;
+            padding: 0.5rem 1rem; /* Mobile padding */
             border: 1px solid var(--border-color);
             border-radius: 8px;
             background-color: var(--tab-inactive-bg);
             color: var(--text-light);
             cursor: pointer;
-            font-size: 0.95rem;
+            font-size: 0.9rem; /* Mobile font size */
             font-weight: 500;
             transition: all 0.2s ease;
             white-space: nowrap;
@@ -93,7 +117,7 @@
         .tab-content {
             display: none;
             width: 100%;
-            max-width: 800px;
+            max-width: 1200px;
         }
 
         .tab-content.active {
@@ -108,17 +132,20 @@
             padding: 1.5rem;
             width: 100%;
             overflow-x: auto;
-        }
-
-        .data-card h2 {
-            display: none; /* Hide the title since it's now in the tab */
+            box-sizing: border-box;
         }
 
         /* --- Table Styling --- */
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.95rem;
+            font-size: 0.85rem; /* Mobile font size */
+        }
+
+        th, td {
+            padding: 0.6rem 0.8rem; /* Mobile padding */
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .rank-column {
@@ -126,12 +153,6 @@
             text-align: center;
             color: var(--accent-color);
             font-weight: 600;
-        }
-
-        th, td {
-            padding: 0.8rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
         }
 
         th {
@@ -151,16 +172,8 @@
             opacity: 0.3;
         }
 
-        th.sort-asc::after {
-            content: '↑';
-            opacity: 1;
-        }
-
-        th.sort-desc::after {
-            content: '↓';
-            opacity: 1;
-        }
-
+        th.sort-asc::after { content: '↑'; opacity: 1; }
+        th.sort-desc::after { content: '↓'; opacity: 1; }
         thead th {
             background-color: var(--header-bg);
             font-weight: 600;
@@ -168,46 +181,68 @@
             text-transform: capitalize;
         }
 
-        tbody tr:hover {
-            background-color: var(--hover-bg);
-        }
+        tbody tr:hover { background-color: var(--hover-bg); }
+        td { color: var(--text-light); }
+        tfoot tr { background-color: var(--average-bg); font-weight: 600; }
+        tfoot td { color: var(--average-text) !important; border-top: 2px solid var(--border-color); }
+        td.ausfall { color: #d9534f; font-style: italic; }
 
-        td {
-            color: var(--text-light);
-        }
-
-        /* Average row styling */
-        tfoot tr {
-            background-color: var(--average-bg);
-            font-weight: 600;
-        }
-
-        tfoot td {
-            color: var(--average-text) !important;
-            border-top: 2px solid var(--border-color);
-        }
-
-        /* Handle special values like 'Ausfall' */
-        td.ausfall {
+        /* Highlight for special values */
+        td.highlight-red {
             color: #d9534f;
-            font-style: italic;
+            font-weight: bold;
+            background-color: #fff5f5;
+            position: relative;
+            cursor: help;
         }
 
-        /* --- Responsive Design --- */
-        @media (max-width: 768px) {
+        /* Tooltip styling */
+        td.highlight-red::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+
+        td.highlight-red:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* --- Responsive Design (Desktop) --- */
+        @media (min-width: 768px) {
+            .main-header {
+                padding: 1.5rem 2rem;
+            }
             .main-header h1 {
-                font-size: 1.5rem;
+                font-size: 2rem;
             }
             .container {
-                padding: 1rem;
+                padding: 2rem;
             }
             .tabs-nav {
-                padding: 0.5rem;
-                margin-bottom: 1rem;
+                margin-bottom: 2rem;
             }
             .tab-button {
-                padding: 0.5rem 1rem;
-                font-size: 0.9rem;
+                padding: 0.75rem 1.5rem;
+                font-size: 0.95rem;
+            }
+            table {
+                font-size: 0.95rem;
+            }
+            th, td {
+                padding: 0.8rem 1rem;
             }
         }
     </style>
@@ -216,6 +251,7 @@
 
     <header class="main-header">
         <h1>U12</h1>
+        <p class="header-subtitle">Performance Data & Analysis</p>
     </header>
 
     <main id="container" class="container">
@@ -223,7 +259,6 @@
     </main>
 
     <script>
-        // Raw CSV data embedded in a template literal
         const csvData = `Geschicklichkeit (18.06.2025),,,,Sprint - Flying Start (14.07.2014),,,,Sprint - Standing Start (14.07.2014),,,,
 Name,ohne_Ball,mit_Ball,,Name,5m,10m,15m,30m,,Name,5m,10m,15m,30m
 Bent,14.63,,,Bent,1.36,2.12,2.87,4.34,,Bent,1.49,2.71,2.92,4.83
@@ -242,27 +277,21 @@ Ben,,22.71,,Ibo,1.46,2.27,3.15,4.76,,Ibo,Ausfall,,3.24,5.28
 Max,,22.36,,Max,1.5,2.32,3.14,4.76,,Max,1.63,2.82,3.22,5.25
 Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3`;
 
-        /**
-         * Parses the raw CSV string and organizes it into structured data objects.
-         */
         function parseData(csv) {
             const lines = csv.trim().split('\n');
             const titles = lines[0].split(',,,,').map(t => t.trim()).filter(Boolean);
             const headerLine = lines[1].split(',');
-
             const datasets = [
                 { title: titles[0], headers: headerLine.slice(0, 3).filter(h => h), data: [], colSlice: [0, 3] },
                 { title: titles[1], headers: headerLine.slice(4, 9).filter(h => h), data: [], colSlice: [4, 9] },
                 { title: titles[2], headers: headerLine.slice(10, 15).filter(h => h), data: [], colSlice: [10, 15] }
             ];
-
             const dataLines = lines.slice(2);
-
             dataLines.forEach(line => {
                 const values = line.split(',');
                 datasets.forEach(dataset => {
                     const rowValues = values.slice(dataset.colSlice[0], dataset.colSlice[1]);
-                    if (rowValues[0] && rowValues[0].trim()) { // Check if there's a name in the first column
+                    if (rowValues[0] && rowValues[0].trim()) {
                         const rowObject = {};
                         dataset.headers.forEach((header, index) => {
                             rowObject[header] = rowValues[index] || '';
@@ -274,192 +303,245 @@ Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3`;
             return datasets;
         }
 
-        /**
-         * Calculates the average of numeric values in an array, ignoring non-numeric and 'Ausfall' values
-         * @param {array} values - Array of values to average
-         * @returns {string} - Formatted average or empty string if no valid numbers
-         */
-        function calculateAverage(values) {
-            const numericValues = values
-                .filter(v => v && v.toLowerCase() !== 'ausfall')
-                .map(v => parseFloat(v))
-                .filter(n => !isNaN(n));
+        function createBentOverview(datasets) {
+            const bentData = {
+                title: "Bent",
+                headers: ['Test', 'Measurement', 'Value', 'Rank'],
+                data: []
+            };
 
-            if (numericValues.length === 0) return '';
+            // 1. Gather existing data and ranks
+            datasets.forEach(dataset => {
+                const bentEntry = dataset.data.find(entry => entry.Name === 'Bent');
+                if (bentEntry) {
+                    Object.entries(bentEntry).forEach(([key, value]) => {
+                        if (key !== 'Name' && value) {
+                            const allValues = dataset.data
+                                .map(entry => entry[key])
+                                .filter(v => v && v.toLowerCase() !== 'ausfall')
+                                .map(v => parseFloat(v))
+                                .filter(n => !isNaN(n))
+                                .sort((a, b) => a - b);
+                            const rank = allValues.indexOf(parseFloat(value)) + 1;
+                            const total = allValues.length;
+                            if (rank > 0) {
+                                bentData.data.push({
+                                    Test: dataset.title.split(' (')[0],
+                                    Measurement: key.replace(/_/g, ' '),
+                                    Value: value,
+                                    Rank: `${rank}/${total}`
+                                });
+                            }
+                        }
+                    });
 
-            const avg = numericValues.reduce((a, b) => a + b) / numericValues.length;
-            return avg.toFixed(2);
+                    // Calculate percentage difference between mit Ball and ohne Ball
+                    if (bentEntry.ohne_Ball && bentEntry.mit_Ball) {
+                        const ohneBall = parseFloat(bentEntry.ohne_Ball);
+                        const mitBall = parseFloat(bentEntry.mit_Ball);
+                        if (!isNaN(ohneBall) && !isNaN(mitBall)) {
+                            const percentDifference = (((mitBall - ohneBall) / ohneBall) * 100).toFixed(1);
+                            bentData.data.push({
+                                Test: dataset.title.split(' (')[0],
+                                Measurement: 'Ball Impact (%)',
+                                Value: `+${percentDifference}%`,
+                                Rank: '-'
+                            });
+                        }
+                    }
+                }
+            });
+
+            // 2. Calculate and add speed analysis for Bent
+            const sprintData = datasets.find(d => d.title.includes('Sprint - Standing Start'));
+            if (sprintData) {
+                const bentSprintEntry = sprintData.data.find(entry => entry.Name === 'Bent');
+                if (bentSprintEntry) {
+                    const t5 = parseFloat(bentSprintEntry['5m']);
+                    const t15 = parseFloat(bentSprintEntry['15m']);
+                    const t30 = parseFloat(bentSprintEntry['30m']);
+
+                    if (!isNaN(t5) && t5 > 0) {
+                        const acceleration = ((2 * 5) / (t5 * t5)).toFixed(2);
+                        bentData.data.push({
+                            Test: 'Speed Analysis',
+                            Measurement: 'Acceleration (m/s²)',
+                            Value: acceleration,
+                            Rank: "-"
+                        });
+                    }
+
+                    if (!isNaN(t15) && !isNaN(t30) && t30 > t15) {
+                        const topSpeed = (((30 - 15) / (t30 - t15)) * 3.6).toFixed(2);
+                        bentData.data.push({
+                            Test: 'Speed Analysis',
+                            Measurement: 'Top Speed (km/h)',
+                            Value: topSpeed,
+                            Rank: "-"
+                        });
+                    }
+                }
+            }
+
+            // 3. Calculate reaction time using difference between standing and flying start at 5m
+            const flyingStartData = datasets.find(d => d.title.includes('Sprint - Flying Start'));
+            const standingStartData = datasets.find(d => d.title.includes('Sprint - Standing Start'));
+
+            if (flyingStartData && standingStartData) {
+                const bentFlyingEntry = flyingStartData.data.find(entry => entry.Name === 'Bent');
+                const bentStandingEntry = standingStartData.data.find(entry => entry.Name === 'Bent');
+
+                if (bentFlyingEntry && bentStandingEntry) {
+                    const flyingTime5m = parseFloat(bentFlyingEntry['5m']);
+                    const standingTime5m = parseFloat(bentStandingEntry['5m']);
+
+                    if (!isNaN(flyingTime5m) && !isNaN(standingTime5m)) {
+                        const reactionTime = ((standingTime5m - flyingTime5m) * 1000).toFixed(0); // Convert to milliseconds
+                        bentData.data.push({
+                            Test: 'Reaction Analysis',
+                            Measurement: 'Reaction Time (ms)',
+                            Value: `${reactionTime}ms`,
+                            Rank: "-"
+                        });
+                    }
+                }
+            }
+            return bentData;
         }
 
-        /**
-         * Compare two values for sorting, handling special cases
-         * @param {string} a - First value
-         * @param {string} b - Second value
-         * @returns {number} - Comparison result (-1, 0, or 1)
-         */
-        function compareValues(a, b) {
-            // Handle empty values and 'Ausfall'
-            if (!a && !b) return 0;
-            if (!a || a.toLowerCase() === 'ausfall') return 1;
-            if (!b || b.toLowerCase() === 'ausfall') return -1;
+        function calculateAverage(values) {
+            const numericValues = values.map(v => parseFloat(v)).filter(n => !isNaN(n));
+            if (numericValues.length === 0) return '';
+            return (numericValues.reduce((a, b) => a + b) / numericValues.length).toFixed(2);
+        }
 
-            // Try numeric comparison first
-            const numA = parseFloat(a);
-            const numB = parseFloat(b);
+        function compareValues(a, b) {
+            const aStr = String(a).trim();
+            const bStr = String(b).trim();
+
+            const isSpecialA = aStr === '-' || aStr === '' || aStr.toLowerCase() === 'ausfall';
+            const isSpecialB = bStr === '-' || bStr === '' || bStr.toLowerCase() === 'ausfall';
+
+            if (isSpecialA && isSpecialB) return 0;
+            if (isSpecialA) return 1;
+            if (isSpecialB) return -1;
+
+            const isRankA = /^\d+\/\d+$/.test(aStr);
+            const isRankB = /^\d+\/\d+$/.test(bStr);
+            if (isRankA && isRankB) {
+                return parseInt(aStr.split('/')[0], 10) - parseInt(bStr.split('/')[0], 10);
+            }
+            if (isRankA) return -1;
+            if (isRankB) return 1;
+
+            const numA = parseFloat(aStr);
+            const numB = parseFloat(bStr);
             if (!isNaN(numA) && !isNaN(numB)) {
                 return numA - numB;
             }
 
-            // Fall back to string comparison
-            return a.toString().localeCompare(b.toString());
+            return aStr.localeCompare(bStr);
         }
 
-        /**
-         * Updates the ranking numbers in a table
-         * @param {HTMLTableElement} table - The table element
-         */
         function updateRankings(table) {
-            const tbody = table.querySelector('tbody');
-            const rows = Array.from(tbody.querySelectorAll('tr'));
-            rows.forEach((row, index) => {
+            const hasRankColumn = !table.closest('.data-card').dataset.noRank;
+            if (!hasRankColumn) return;
+            table.querySelectorAll('tbody tr').forEach((row, index) => {
                 row.cells[0].textContent = (index + 1) + '.';
             });
         }
 
-        /**
-         * Sort table data by a specific column
-         * @param {HTMLTableElement} table - The table element
-         * @param {number} columnIndex - Index of the column to sort by
-         * @param {boolean} asc - Sort in ascending order if true
-         */
         function sortTable(table, columnIndex, asc) {
             const tbody = table.querySelector('tbody');
             const rows = Array.from(tbody.querySelectorAll('tr'));
+            const hasRankColumn = !table.closest('.data-card').dataset.noRank;
+            const sortColumnIndex = hasRankColumn ? columnIndex + 1 : columnIndex;
 
-            // Adjust columnIndex to account for ranking column
-            const sortColumnIndex = columnIndex + 1;
+            table.querySelectorAll('th').forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+            table.querySelectorAll('th')[hasRankColumn ? columnIndex : columnIndex].classList.add(asc ? 'sort-asc' : 'sort-desc');
 
-            // Update header sort indicators
-            const headers = table.querySelectorAll('th');
-            headers.forEach(header => {
-                header.classList.remove('sort-asc', 'sort-desc');
-            });
-            headers[columnIndex].classList.add(asc ? 'sort-asc' : 'sort-desc');
-
-            // Sort the rows
             rows.sort((rowA, rowB) => {
                 const cellA = rowA.cells[sortColumnIndex].textContent;
                 const cellB = rowB.cells[sortColumnIndex].textContent;
                 return (asc ? 1 : -1) * compareValues(cellA, cellB);
             });
 
-            // Remove existing rows and append sorted ones
-            while (tbody.firstChild) {
-                tbody.removeChild(tbody.firstChild);
-            }
             rows.forEach(row => tbody.appendChild(row));
-
-            // Update rankings after sort
             updateRankings(table);
         }
 
-        /**
-         * Switch to a specific tab
-         * @param {string} testName - The name of the test/tab to switch to
-         */
         function switchTab(testName) {
-            // Update tab buttons
-            document.querySelectorAll('.tab-button').forEach(button => {
-                button.classList.toggle('active', button.dataset.test === testName);
-            });
-
-            // Update tab contents
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.toggle('active', content.dataset.test === testName);
-            });
+            document.querySelectorAll('.tab-button').forEach(button => button.classList.toggle('active', button.dataset.test === testName));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.toggle('active', content.dataset.test === testName));
         }
 
-        /**
-         * Creates the tabbed navigation
-         * @param {HTMLElement} container - The container element
-         * @param {Array} datasets - The array of test datasets
-         */
         function createTabsNavigation(container, datasets) {
             const tabsNav = document.createElement('div');
             tabsNav.className = 'tabs-nav';
-
-            // Create tab buttons for each test
             datasets.forEach((dataset, index) => {
                 const button = document.createElement('button');
                 button.className = 'tab-button' + (index === 0 ? ' active' : '');
-                button.textContent = dataset.title.split(' (')[0]; // Remove date from tab name
+                button.textContent = dataset.title.split(' (')[0];
                 button.dataset.test = dataset.title;
                 button.addEventListener('click', () => switchTab(dataset.title));
                 tabsNav.appendChild(button);
             });
-
             container.appendChild(tabsNav);
         }
 
-        /**
-         * Creates and appends a data table inside a card to the specified container.
-         * @param {HTMLElement} container - The DOM element to append the card to.
-         * @param {object} dataset - The structured data object for the table.
-         */
         function createTableCard(container, dataset) {
-            // Create card container
             const card = document.createElement('div');
             card.className = 'data-card';
-
-            // Create table
             const table = document.createElement('table');
-
-            // Create table header with sorting
             const thead = document.createElement('thead');
             const headerRow = document.createElement('tr');
 
-            // Add ranking column header
-            const rankHeader = document.createElement('th');
-            rankHeader.textContent = '#';
-            rankHeader.className = 'rank-column';
-            rankHeader.style.cursor = 'default';
-            rankHeader.style.width = '40px';
-            headerRow.appendChild(rankHeader);
+            const hasRankColumn = dataset.title !== "Bent";
+            if (!hasRankColumn) {
+                card.dataset.noRank = true;
+            }
 
-            // Add other headers
+            if (hasRankColumn) {
+                const rankHeader = document.createElement('th');
+                rankHeader.textContent = '#';
+                rankHeader.className = 'rank-column';
+                rankHeader.style.cursor = 'default';
+                headerRow.appendChild(rankHeader);
+            }
+
             dataset.headers.forEach((headerText, index) => {
                 const th = document.createElement('th');
-                th.textContent = headerText.replace(/_/g, ' '); // Replace underscores for display
-
-                // Add click handler for sorting
+                th.textContent = headerText.replace(/_/g, ' ');
                 th.addEventListener('click', () => {
                     const currentIsAsc = th.classList.contains('sort-asc');
                     sortTable(table, index, !currentIsAsc);
                 });
-
                 headerRow.appendChild(th);
             });
             thead.appendChild(headerRow);
             table.appendChild(thead);
 
-            // Create table body
             const tbody = document.createElement('tbody');
             dataset.data.forEach((rowData, rowIndex) => {
                 const row = document.createElement('tr');
-
-                // Add ranking column
-                const rankCell = document.createElement('td');
-                rankCell.textContent = (rowIndex + 1) + '.';
-                rankCell.className = 'rank-column';
-                row.appendChild(rankCell);
-
-                // Add data columns
+                if (hasRankColumn) {
+                    const rankCell = document.createElement('td');
+                    rankCell.textContent = (rowIndex + 1) + '.';
+                    rankCell.className = 'rank-column';
+                    row.appendChild(rankCell);
+                }
                 dataset.headers.forEach(header => {
                     const td = document.createElement('td');
                     const value = rowData[header];
                     td.textContent = value;
-                    if (value.toLowerCase() === 'ausfall') {
+                    if (String(value).toLowerCase() === 'ausfall') {
                         td.className = 'ausfall';
+                    } else if (dataset.title === 'Bent' && value === '2.92') {
+                        td.className = 'highlight-red';
+                        td.setAttribute('data-tooltip', '85.7 km/h');
+                    } else if (dataset.title === 'Bent' && (value === '1.36' || value === '1.49')) {
+                        td.className = 'highlight-red';
+                        td.setAttribute('data-tooltip', '0.1s Unterschied');
                     }
                     row.appendChild(td);
                 });
@@ -467,94 +549,41 @@ Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3`;
             });
             table.appendChild(tbody);
 
-            // Create table footer with averages (only for test result tables, not for Bent's overview)
-            if (dataset.data.length > 0 && dataset.title !== "Bent's Overview") {
+            if (hasRankColumn && dataset.data.length > 0) {
                 const tfoot = document.createElement('tfoot');
                 const averageRow = document.createElement('tr');
-
-                // Add empty cell for ranking column
-                const rankCell = document.createElement('td');
-                rankCell.className = 'rank-column';
-                averageRow.appendChild(rankCell);
-
+                averageRow.appendChild(document.createElement('td'));
                 dataset.headers.forEach((header, index) => {
                     const td = document.createElement('td');
                     if (index === 0) {
                         td.textContent = 'Average';
                     } else {
-                        // Calculate average for numeric columns
-                        const values = dataset.data.map(row => row[header]);
-                        td.textContent = calculateAverage(values);
+                        td.textContent = calculateAverage(dataset.data.map(row => row[header]));
                     }
                     averageRow.appendChild(td);
                 });
-
                 tfoot.appendChild(averageRow);
                 table.appendChild(tfoot);
             }
-
             card.appendChild(table);
             container.appendChild(card);
         }
 
-        /**
-         * Creates a combined dataset of Bent's results
-         * @param {Array} datasets - The original datasets
-         * @returns {Object} - Dataset with Bent's combined results
-         */
-        function createBentOverview(datasets) {
-            const bentData = {
-                title: "Bent's Overview",
-                headers: ['Test', 'Measurement', 'Value', 'Rank'],
-                data: []
-            };
-
-            datasets.forEach(dataset => {
-                // Find Bent's data in this test
-                const bentEntry = dataset.data.find(entry => entry.Name === 'Bent');
-                if (bentEntry) {
-                    // Get all measurements except Name
-                    Object.entries(bentEntry).forEach(([key, value]) => {
-                        if (key !== 'Name' && value) {
-                            // Find Bent's rank for this measurement
-                            const allValues = dataset.data
-                                .map(entry => entry[key])
-                                .filter(v => v && v.toLowerCase() !== 'ausfall')
-                                .map(v => parseFloat(v))
-                                .filter(n => !isNaN(n))
-                                .sort((a, b) => a - b);
-
-                            const rank = allValues.indexOf(parseFloat(value)) + 1;
-                            const total = allValues.length;
-
-                            bentData.data.push({
-                                Test: dataset.title.split(' (')[0],
-                                Measurement: key.replace(/_/g, ' '),
-                                Value: value,
-                                Rank: `${rank}/${total}`
-                            });
-                        }
-                    });
-                }
-            });
-
-            return bentData;
-        }
-
-        // Main execution logic
         document.addEventListener('DOMContentLoaded', () => {
             const container = document.getElementById('container');
-            const datasets = parseData(csvData);
+            const originalDatasets = parseData(csvData);
+            const bentOverview = createBentOverview(originalDatasets);
 
-            // Create Bent's overview dataset
-            const bentOverview = createBentOverview(datasets);
-            datasets.unshift(bentOverview); // Add Bent's overview as the first dataset
+            const displayDatasets = [bentOverview, ...originalDatasets];
 
-            // Create tabs navigation
-            createTabsNavigation(container, datasets);
+            const notesContainer = document.createElement('div');
+            notesContainer.className = 'notes-container';
+            notesContainer.innerHTML = `<p class="note"><b>Note:</b> Speed analysis metrics in Bent's tab assume a standing start (0 km/h).</p>`;
+            container.appendChild(notesContainer);
 
-            // Create tab content for each dataset
-            datasets.forEach((dataset, index) => {
+            createTabsNavigation(container, displayDatasets);
+
+            displayDatasets.forEach((dataset, index) => {
                 if (dataset.data.length > 0) {
                     const tabContent = document.createElement('div');
                     tabContent.className = 'tab-content' + (index === 0 ? ' active' : '');
@@ -563,6 +592,11 @@ Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3`;
                     container.appendChild(tabContent);
                 }
             });
+
+            if (displayDatasets.length > 1) {
+                const firstTestTable = document.querySelector(`.tab-content[data-test="${displayDatasets[1].title}"] table`);
+                if(firstTestTable) sortTable(firstTestTable, 1, true); // Sort by second data column (ohne_Ball)
+            }
         });
     </script>
 
