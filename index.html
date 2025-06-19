@@ -81,12 +81,13 @@
         /* Tabs Navigation */
         .tabs-nav {
             display: flex;
+            flex-wrap: wrap;
             gap: 0.5rem;
             margin-bottom: 1rem; /* Mobile margin */
             width: 100%;
             max-width: 1200px;
-            overflow-x: auto;
             padding: 0.5rem 0;
+            justify-content: center; /* Center tabs on mobile */
         }
 
         .tab-button {
@@ -100,6 +101,24 @@
             font-weight: 500;
             transition: all 0.2s ease;
             white-space: nowrap;
+            flex: 1 1 auto; /* Allow tabs to grow and shrink */
+            min-width: fit-content; /* Ensure content fits */
+            text-align: center;
+        }
+
+        /* Small screen adjustments */
+        @media (max-width: 767px) {
+            .tabs-nav {
+                gap: 0.25rem;
+                justify-content: flex-start; /* Align to start on very small screens */
+            }
+            
+            .tab-button {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.85rem;
+                flex: 0 1 auto; /* Don't grow, but allow shrinking */
+                min-width: 0; /* Allow full shrinking */
+            }
         }
 
         .tab-button:hover {
@@ -233,10 +252,13 @@
             }
             .tabs-nav {
                 margin-bottom: 2rem;
+                justify-content: flex-start; /* Align to start on desktop */
+                gap: 0.75rem;
             }
             .tab-button {
                 padding: 0.75rem 1.5rem;
                 font-size: 0.95rem;
+                flex: 0 0 auto; /* Don't grow or shrink on desktop */
             }
             table {
                 font-size: 0.95rem;
@@ -539,9 +561,6 @@ Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3`;
                     } else if (dataset.title === 'Bent' && value === '2.92') {
                         td.className = 'highlight-red';
                         td.setAttribute('data-tooltip', '85.7 km/h');
-                    } else if (dataset.title === 'Bent' && (value === '1.36' || value === '1.49')) {
-                        td.className = 'highlight-red';
-                        td.setAttribute('data-tooltip', '0.1s Unterschied');
                     }
                     row.appendChild(td);
                 });
