@@ -239,6 +239,18 @@
             visibility: visible;
         }
 
+        /* Special styling for Bent's rank column */
+        .bent-rank-best {
+            color: #28a745;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .bent-rank-number {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
         /* --- Responsive Design (Desktop) --- */
         @media (min-width: 768px) {
             .main-header {
@@ -328,7 +340,7 @@ Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3`;
         function createBentOverview(datasets) {
             const bentData = {
                 title: "Bent",
-                headers: ['Test', 'Messung', 'Wert', 'Rang'],
+                headers: ['Rang', 'Test', 'Messung', 'Wert'],
                 data: []
             };
 
@@ -348,10 +360,10 @@ Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3`;
                             const total = allValues.length;
                             if (rank > 0) {
                                 bentData.data.push({
+                                    Rang: `${rank}/${total}`,
                                     Test: dataset.title.split(' (')[0],
-                                    Measurement: key.replace(/_/g, ' '),
-                                    Value: value,
-                                    Rank: `${rank}/${total}`
+                                    Messung: key.replace(/_/g, ' '),
+                                    Wert: value
                                 });
                             }
                         }
@@ -362,71 +374,23 @@ Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3`;
                         const ohneBall = parseFloat(bentEntry.ohne_Ball);
                         const mitBall = parseFloat(bentEntry.mit_Ball);
                         if (!isNaN(ohneBall) && !isNaN(mitBall)) {
-                            const percentDifference = (((mitBall - ohneBall) / ohneBall) * 100).toFixed(1);                                bentData.data.push({
-                                    Test: dataset.title.split(' (')[0],
-                                    Messung: 'Ball-Einfluss (%)',
-                                    Wert: `+${percentDifference}%`,
-                                    Rang: '-'
-                                });
+                            const percentDifference = (((mitBall - ohneBall) / ohneBall) * 100).toFixed(1);
+                            bentData.data.push({
+                                Rang: '-',
+                                Test: dataset.title.split(' (')[0],
+                                Messung: 'Ball-Einfluss (%)',
+                                Wert: `+${percentDifference}%`
+                            });
                         }
                     }
                 }
             });
 
-            // 2. Calculate and add speed analysis for Bent
-            const sprintData = datasets.find(d => d.title.includes('Sprint - Standing Start'));
-            if (sprintData) {
-                const bentSprintEntry = sprintData.data.find(entry => entry.Name === 'Bent');
-                if (bentSprintEntry) {
-                    const t5 = parseFloat(bentSprintEntry['5m']);
-                    const t15 = parseFloat(bentSprintEntry['15m']);
-                    const t30 = parseFloat(bentSprintEntry['30m']);
+            // 2. Calculate and add speed analysis for Bent - REMOVED
+            // Speed analysis calculations have been removed per user request
 
-                    if (!isNaN(t5) && t5 > 0) {
-                        const acceleration = ((2 * 5) / (t5 * t5)).toFixed(2);
-                        bentData.data.push({
-                            Test: 'Geschwindigkeits-Analyse',
-                            Messung: 'Beschleunigung (m/s²)',
-                            Wert: acceleration,
-                            Rang: "-"
-                        });
-                    }
-
-                    if (!isNaN(t15) && !isNaN(t30) && t30 > t15) {
-                        const topSpeed = (((30 - 15) / (t30 - t15)) * 3.6).toFixed(2);
-                        bentData.data.push({
-                            Test: 'Geschwindigkeits-Analyse',
-                            Messung: 'Höchstgeschwindigkeit (km/h)',
-                            Wert: topSpeed,
-                            Rang: "-"
-                        });
-                    }
-                }
-            }
-
-            // 3. Calculate reaction time using difference between standing and flying start at 5m
-            const flyingStartData = datasets.find(d => d.title.includes('Sprint - Flying Start'));
-            const standingStartData = datasets.find(d => d.title.includes('Sprint - Standing Start'));
-
-            if (flyingStartData && standingStartData) {
-                const bentFlyingEntry = flyingStartData.data.find(entry => entry.Name === 'Bent');
-                const bentStandingEntry = standingStartData.data.find(entry => entry.Name === 'Bent');
-
-                if (bentFlyingEntry && bentStandingEntry) {
-                    const flyingTime5m = parseFloat(bentFlyingEntry['5m']);
-                    const standingTime5m = parseFloat(bentStandingEntry['5m']);
-
-                    if (!isNaN(flyingTime5m) && !isNaN(standingTime5m)) {
-                        const reactionTime = ((standingTime5m - flyingTime5m) * 1000).toFixed(0); // Convert to milliseconds
-                        bentData.data.push({
-                            Test: 'Reaktions-Analyse',
-                            Messung: 'Reaktionszeit (ms)',
-                            Wert: `${reactionTime}ms`,
-                            Rang: "-"
-                        });
-                    }
-                }
-            }
+            // 3. Calculate reaction time using difference between standing and flying start at 5m - REMOVED
+            // Reaction time calculations have been removed per user request
             return bentData;
         }
 
@@ -554,12 +518,26 @@ Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3`;
                 dataset.headers.forEach(header => {
                     const td = document.createElement('td');
                     const value = rowData[header];
-                    td.textContent = value;
-                    if (String(value).toLowerCase() === 'ausfall') {
-                        td.className = 'ausfall';
-                    } else if (dataset.title === 'Bent' && value === '2.92') {
-                        td.className = 'highlight-red';
-                        td.setAttribute('data-tooltip', '85.7 km/h');
+
+                    // Special formatting for Bent's rank column
+                    if (dataset.title === 'Bent' && header === 'Rang') {
+                        if (value === '1/' + value.split('/')[1]) {
+                            td.textContent = 'BESTER';
+                            td.className = 'bent-rank-best';
+                        } else if (value.match(/^\d+\/\d+$/)) {
+                            td.textContent = value;
+                            td.className = 'bent-rank-number';
+                        } else {
+                            td.textContent = value;
+                        }
+                    } else {
+                        td.textContent = value;
+                        if (String(value).toLowerCase() === 'ausfall') {
+                            td.className = 'ausfall';
+                        } else if (dataset.title === 'Bent' && value === '2.92') {
+                            td.className = 'highlight-red';
+                            td.setAttribute('data-tooltip', '85.7 km/h');
+                        }
                     }
                     row.appendChild(td);
                 });
@@ -592,7 +570,8 @@ Theo,,,,Florian,1.58,2.37,3.18,4.8,,Florian,1.68,2.9,3.31,5.3`;
             const originalDatasets = parseData(csvData);
             const bentOverview = createBentOverview(originalDatasets);
 
-            const displayDatasets = [bentOverview, ...originalDatasets];
+            // Hide Bent tab for now - only show original datasets
+            const displayDatasets = [...originalDatasets];
 
             const notesContainer = document.createElement('div');
             notesContainer.className = 'notes-container';
