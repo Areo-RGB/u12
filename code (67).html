@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Athlete Performance Data</title>
+    <style>
+        /* General Body Styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 98%;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        h1 {
+            text-align: center;
+            color: #1a2533;
+            margin-bottom: 25px;
+        }
+
+        /* --- Player Spotlight Section --- */
+        .player-spotlight-controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #playerSelector {
+            font-size: 1.1em;
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        #spotlight-card-container {
+            display: none; /* Hidden by default */
+            margin-bottom: 30px;
+        }
+        #spotlight-card {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fdfdfd;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        #spotlight-card h2 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #1a2533;
+        }
+        #spotlight-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+        }
+        #spotlight-card li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 10px;
+            background-color: #f0f3f5;
+            border-radius: 4px;
+        }
+        #spotlight-card .label {
+            color: #555;
+            font-size: 0.9em;
+        }
+        #spotlight-card .result-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #spotlight-card .rank {
+            font-size: 0.8em;
+            color: #5d6d7e;
+            font-weight: bold;
+        }
+        #spotlight-card .value {
+            font-weight: bold;
+            font-size: 1em;
+        }
+        #spotlight-card .value.failure { color: #d9534f; }
+        #spotlight-card .value.no-data { color: #888; font-style: italic; font-weight: normal; }
+        /* --- END: Player Spotlight Section --- */
+
+        /* Card Layout Wrapper */
+        .card-columns-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        /* Individual Performance Column */
+        .performance-column {
+            flex: 1;
+            min-width: 215px;
+            background-color: #fdfdfd;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .column-header {
+            color: #ffffff;
+            font-weight: bold;
+            padding: 10px 15px;
+            font-size: 0.9em;
+            text-align: center;
+            margin: 0;
+        }
+
+        .cards-list {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .performance-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            font-size: 0.9em;
+        }
+
+        .rank-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background-color: #5d6d7e;
+            color: #fff;
+            font-size: 0.75em;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .card-name {
+            font-weight: 500;
+            color: #444;
+            flex-grow: 1;
+            white-space: nowrap;
+        }
+        
+        .card-value {
+            font-weight: bold;
+            color: #1a2533;
+            background-color: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .performance-card.no-data,
+        .performance-card.failure { background-color: #f9f9f9; }
+        .performance-card.no-data .card-value,
+        .performance-card.failure .card-value { background-color: transparent; }
+        .performance-card.no-data .card-value { color: #888; font-style: italic; font-weight: normal; }
+        .performance-card.failure .card-value { color: #d9534f; font-weight: bold; }
+
+        .th-agility { background-color: #27ae60; }
+        .th-sprint-flying-group { background-color: #2980b9; }
+        .th-sprint-standing-group { background-color: #e67e22; }
+        .th-difference { background-color: #8e44ad; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Athlete Performance Data</h1>
+
+        <div class="player-spotlight-controls">
+            <label for="playerSelector"><strong>Select an Athlete:</strong></label>
+            <select id="playerSelector"></select>
+        </div>
+
+        <div id="spotlight-card-container">
+            <div id="spotlight-card"></div>
+        </div>
+
+        <div id="card-container" class="card-columns-wrapper"></div>
+    </div>
+
+    <script>
+        const originalAthletesData = [
+            { name: "Ricky", agilityNoBall: 14.98, agilityWithBall: 22.06, sprint5f: 1.40, sprint10f: 1.55, sprint15f: 2.86, sprint30f: 2.95, sprint5s: 2.20, sprint10s: 2.69, sprint15s: 4.34, sprint30s: 4.88 },
+            { name: "Ilyas", agilityNoBall: 16.25, agilityWithBall: 21.21, sprint5f: 1.47, sprint10f: 1.61, sprint15f: 3.05, sprint30f: 3.22, sprint5s: 2.27, sprint10s: 2.85, sprint15s: 4.65, sprint30s: 5.21 },
+            { name: "Berkay", agilityNoBall: 14.87, agilityWithBall: 20.77, sprint5f: 1.42, sprint10f: 1.59, sprint15f: 2.89, sprint30f: 3.05, sprint5s: 2.21, sprint10s: 2.86, sprint15s: 4.43, sprint30s: 5.24 },
+            { name: "Bob", agilityNoBall: 15.69, agilityWithBall: 21.73, sprint5f: 1.46, sprint10f: 1.61, sprint15f: 3.07, sprint30f: 3.24, sprint5s: 2.23, sprint10s: 2.83, sprint15s: 4.69, sprint30s: 5.36 },
+            { name: "Ibo", agilityNoBall: "No time", agilityWithBall: 22.53, sprint5f: 1.46, sprint10f: "Failure", sprint15f: 3.15, sprint30f: 3.24, sprint5s: 2.27, sprint10s: "Failure", sprint15s: 4.76, sprint30s: 5.28 },
+            { name: "Ben", agilityNoBall: "No time", agilityWithBall: 22.71, sprint5f: 1.48, sprint10f: 1.61, sprint15f: 3.13, sprint30f: 3.10, sprint5s: 2.28, sprint10s: 2.73, sprint15s: 4.74, sprint30s: 5.05 },
+            { name: "Bent", agilityNoBall: 14.63, agilityWithBall: "No time", sprint5f: 1.36, sprint10f: 1.49, sprint15f: 2.87, sprint30f: 2.92, sprint5s: 2.12, sprint10s: 2.71, sprint15s: 4.34, sprint30s: 4.83 },
+            { name: "Seyit", agilityNoBall: 15.78, agilityWithBall: 22.01, sprint5f: 1.39, sprint10f: 1.53, sprint15f: 2.90, sprint30f: 2.92, sprint5s: 2.17, sprint10s: 2.73, sprint15s: 4.43, sprint30s: 4.94 },
+            { name: "Moritz", agilityNoBall: 15.09, agilityWithBall: "No time", sprint5f: 1.39, sprint10f: 1.59, sprint15f: 2.99, sprint30f: 3.06, sprint5s: 2.19, sprint10s: 2.90, sprint15s: 4.52, sprint30s: 5.19 },
+            { name: "Noan", agilityNoBall: 15.15, agilityWithBall: 21.30, sprint5f: 1.46, sprint10f: 1.62, sprint15f: 3.17, sprint30f: 3.19, sprint5s: 2.24, sprint10s: 2.88, sprint15s: 4.69, sprint30s: 5.28 },
+            { name: "Max", agilityNoBall: "No time", agilityWithBall: 22.36, sprint5f: 1.50, sprint10f: 1.63, sprint15f: 3.14, sprint30f: 3.22, sprint5s: 2.32, sprint10s: 2.82, sprint15s: 4.76, sprint30s: 5.25 },
+            { name: "Florian", agilityNoBall: 16.09, agilityWithBall: 22.19, sprint5f: 1.58, sprint10f: 1.68, sprint15f: 3.18, sprint30f: 3.31, sprint5s: 2.37, sprint10s: 2.90, sprint15s: 4.80, sprint30s: 5.30 },
+            { name: "Theo", agilityNoBall: "No time", agilityWithBall: "No time", sprint5f: 1.49, sprint10f: 1.58, sprint15f: 3.01, sprint30f: 3.07, sprint5s: 2.26, sprint10s: 2.75, sprint15s: 4.55, sprint30s: 5.13 },
+            { name: "Lorent", agilityNoBall: 15.10, agilityWithBall: 20.85, sprint5f: 1.48, sprint10f: 1.56, sprint15f: 3.01, sprint30f: 3.08, sprint5s: 2.21, sprint10s: 2.83, sprint15s: 4.53, sprint30s: 5.16 },
+            { name: "Eladji", agilityNoBall: 15.58, agilityWithBall: 21.85, sprint5f: 1.38, sprint10f: 1.52, sprint15f: 2.87, sprint30f: 2.89, sprint5s: 2.21, sprint10s: 2.74, sprint15s: 4.35, sprint30s: 5.00 },
+            { name: "Julius", agilityNoBall: "No data", agilityWithBall: "No data", sprint5f: "No data", sprint10f: "No data", sprint15f: "No data", sprint30f: "No data", sprint5s: "No data", sprint10s: "No data", sprint15s: "No data", sprint30s: "No data" },
+            { name: "Moritz 15", agilityNoBall: "No data", agilityWithBall: "No data", sprint5f: "No data", sprint10f: "No data", sprint15f: "No data", sprint30f: "No data", sprint5s: "No data", sprint10s: "No data", sprint15s: "No data", sprint30s: "No data" },
+            { name: "Moussa", agilityNoBall: "No data", agilityWithBall: "No data", sprint5f: "No data", sprint10f: "No data", sprint15f: "No data", sprint30f: "No data", sprint5s: "No data", sprint10s: "No data", sprint15s: "No data", sprint30s: "No data" }
+        ];
+
+        const layoutConfig = [
+            { type: 'agility_pair', noBallKey: 'agilityNoBall', withBallKey: 'agilityWithBall' },
+            { type: 'sprint_pair', distance: '5m', flyingKey: 'sprint5f', standingKey: 'sprint5s' },
+            { type: 'sprint_pair', distance: '10m', flyingKey: 'sprint10f', standingKey: 'sprint10s' },
+            { type: 'sprint_pair', distance: '15m', flyingKey: 'sprint15f', standingKey: 'sprint15s' },
+            { type: 'sprint_pair', distance: '30m', flyingKey: 'sprint30f', standingKey: 'sprint30s' },
+        ];
+
+        const spotlightLabels = {
+            agilityNoBall: 'Agility: No Ball (s)', agilityWithBall: 'Agility: With Ball (s)',
+            sprint5f: 'Flying Sprint: 5m (s)', sprint10f: 'Flying Sprint: 10m (s)',
+            sprint15f: 'Flying Sprint: 15m (s)', sprint30f: 'Flying Sprint: 30m (s)',
+            sprint5s: 'Standing Sprint: 5m (s)', sprint10s: 'Standing Sprint: 10m (s)',
+            sprint15s: 'Standing Sprint: 15m (s)', sprint30s: 'Standing Sprint: 30m (s)',
+        };
+
+        function createCorrectedData(data) {
+            return JSON.parse(JSON.stringify(data)).map(athlete => {
+                const tempA = athlete.sprint30f;
+                athlete.sprint30f = athlete.sprint15s;
+                athlete.sprint15s = tempA;
+                const tempB = athlete.sprint10f;
+                athlete.sprint10f = athlete.sprint5s;
+                athlete.sprint5s = tempB;
+                return athlete;
+            });
+        }
+
+        // NEW function to pre-calculate all ranks
+        function calculateRanks(data) {
+            const rankedData = JSON.parse(JSON.stringify(data));
+            const keysToRank = Object.keys(spotlightLabels);
+
+            keysToRank.forEach(key => {
+                const validEntries = data
+                    .map(a => ({ name: a.name, value: a[key] }))
+                    .filter(a => typeof a.value === 'number')
+                    .sort((a, b) => a.value - b.value);
+
+                const rankMap = new Map();
+                validEntries.forEach((entry, index) => {
+                    rankMap.set(entry.name, index + 1);
+                });
+
+                rankedData.forEach(athlete => {
+                    const originalValue = athlete[key];
+                    athlete[key] = {
+                        value: originalValue,
+                        rank: rankMap.get(athlete.name) || null
+                    };
+                });
+            });
+            return rankedData;
+        }
+
+        function createColumn(title, cssClass, cardData) {
+            const columnDiv = document.createElement('div');
+            columnDiv.className = 'performance-column';
+            const header = document.createElement('h3');
+            header.className = `column-header ${cssClass}`;
+            header.textContent = title;
+            const cardsList = document.createElement('div');
+            cardsList.className = 'cards-list';
+            
+            cardData.forEach(data => {
+                const card = document.createElement('div');
+                card.className = 'performance-card';
+                if (data.class) card.classList.add(data.class);
+                card.dataset.value = data.sortValue;
+                card.dataset.rank = data.rank || ''; // Store rank in data attribute
+                card.innerHTML = `<span class="card-name">${data.name}</span> <span class="card-value">${data.displayValue}</span>`;
+                cardsList.appendChild(card);
+            });
+            columnDiv.appendChild(header);
+            columnDiv.appendChild(cardsList);
+            return columnDiv;
+        }
+
+        const formatCardData = (data, key) => data.map(athlete => {
+            const { value, rank } = athlete[key];
+            const result = { name: athlete.name, rank: rank, sortValue: 9999, displayValue: value, class: 'no-data' };
+            if (typeof value === 'number') {
+                result.sortValue = value;
+                result.class = '';
+            } else if (String(value).toLowerCase().includes('failure')) {
+                result.sortValue = 9998;
+                result.class = 'failure';
+            }
+            return result;
+        });
+
+        function buildLayout(container, data) {
+            container.innerHTML = '';
+            layoutConfig.forEach(config => {
+                if (config.type === 'agility_pair') {
+                    const noBallData = formatCardData(data, config.noBallKey);
+                    const withBallData = formatCardData(data, config.withBallKey);
+                    const diffData = data.map(athlete => {
+                        const valNoBall = athlete[config.noBallKey].value;
+                        const valWithBall = athlete[config.withBallKey].value;
+                        const result = { name: athlete.name, sortValue: 9999, displayValue: "N/A", class: 'no-data' };
+                        if (typeof valNoBall === 'number' && typeof valWithBall === 'number') {
+                            const diff = ((valWithBall - valNoBall) / valNoBall) * 100;
+                            result.sortValue = diff;
+                            result.displayValue = diff.toFixed(1) + '%';
+                            result.class = '';
+                        }
+                        return result;
+                    });
+                    container.appendChild(createColumn('Agility: without Ball (s)', 'th-agility', noBallData));
+                    container.appendChild(createColumn('Agility: with Ball (s)', 'th-agility', withBallData));
+                    container.appendChild(createColumn('Agility: Difference (%)', 'th-difference', diffData));
+                }
+                if (config.type === 'sprint_pair') {
+                    const flyingCardData = formatCardData(data, config.flyingKey);
+                    const standingCardData = formatCardData(data, config.standingKey);
+                    const diffCardData = data.map(athlete => {
+                        const valF = athlete[config.flyingKey].value;
+                        const valS = athlete[config.standingKey].value;
+                        const result = { name: athlete.name, sortValue: 9999, displayValue: "N/A", class: 'no-data' };
+                        if (typeof valF === 'number' && typeof valS === 'number') {
+                            const diff = ((valS - valF) / valF) * 100;
+                            result.sortValue = diff;
+                            result.displayValue = diff.toFixed(1) + '%';
+                            result.class = '';
+                        }
+                        return result;
+                    });
+                    container.appendChild(createColumn(`Flying: ${config.distance} (s)`, 'th-sprint-flying-group', flyingCardData));
+                    container.appendChild(createColumn(`Standing: ${config.distance} (s)`, 'th-sprint-standing-group', standingCardData));
+                    container.appendChild(createColumn(`Difference: ${config.distance} (%)`, 'th-difference', diffCardData));
+                }
+            });
+        }
+        
+        function sortAndRankColumns() {
+            document.querySelectorAll('.performance-column').forEach(column => {
+                const cardsList = column.querySelector('.cards-list');
+                const cards = Array.from(cardsList.querySelectorAll('.performance-card'));
+                cards.sort((a, b) => parseFloat(a.dataset.value) - parseFloat(b.dataset.value));
+                cards.forEach(card => {
+                    card.querySelector('.rank-indicator')?.remove();
+                    const rank = card.dataset.rank;
+                    if (rank) { // Only add rank if it exists
+                        const rankCircle = document.createElement('span');
+                        rankCircle.className = 'rank-indicator';
+                        rankCircle.textContent = rank;
+                        card.prepend(rankCircle);
+                    }
+                    cardsList.appendChild(card);
+                });
+            });
+        }
+
+        function populatePlayerDropdown(selector, data) {
+            selector.innerHTML = '<option value="">-- Select an Athlete --</option>';
+            data.forEach(athlete => {
+                const option = document.createElement('option');
+                option.value = athlete.name;
+                option.textContent = athlete.name;
+                selector.appendChild(option);
+            });
+        }
+
+        function displaySpotlightCard(athlete, container) {
+            let cardHTML = `<h2>${athlete.name}</h2><ul>`;
+            for (const key in spotlightLabels) {
+                const label = spotlightLabels[key];
+                const { value, rank } = athlete[key];
+                let valueClass = '';
+                if (typeof value !== 'number') {
+                    const lc = String(value).toLowerCase();
+                    if(lc.includes('failure')) valueClass = 'failure';
+                    else valueClass = 'no-data';
+                }
+                cardHTML += `
+                    <li>
+                        <span class="label">${label}</span>
+                        <div class="result-group">
+                            ${rank ? `<span class="rank">(Rank: ${rank})</span>` : ''}
+                            <span class="value ${valueClass}">${value}</span>
+                        </div>
+                    </li>`;
+            }
+            cardHTML += `</ul>`;
+            container.innerHTML = cardHTML;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const cardContainer = document.getElementById('card-container');
+            const playerSelector = document.getElementById('playerSelector');
+            const spotlightContainer = document.getElementById('spotlight-card-container');
+            const spotlightCard = document.getElementById('spotlight-card');
+
+            const correctedData = createCorrectedData(originalAthletesData);
+            const finalAthleteData = calculateRanks(correctedData);
+            
+            buildLayout(cardContainer, finalAthleteData);
+            sortAndRankColumns();
+            populatePlayerDropdown(playerSelector, finalAthleteData);
+
+            playerSelector.addEventListener('change', (e) => {
+                const selectedName = e.target.value;
+                if (selectedName) {
+                    const athleteData = finalAthleteData.find(a => a.name === selectedName);
+                    displaySpotlightCard(athleteData, spotlightCard);
+                    spotlightContainer.style.display = 'block';
+                } else {
+                    spotlightContainer.style.display = 'none';
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
