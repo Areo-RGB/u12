@@ -231,6 +231,168 @@
         .performance-card.no-data .card-value { color: #888; font-style: italic; font-weight: normal; }
         .performance-card.failure .card-value { color: #d9534f; font-weight: bold; }
 
+        /* Tooltip styles */
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8em;
+            line-height: 1.2;
+        }
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+        .tooltip:hover .tooltiptext,
+        .tooltip:active .tooltiptext,
+        .tooltip:focus .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        /* Mobile tap support */
+        @media (hover: none) and (pointer: coarse) {
+            .tooltip:active .tooltiptext {
+                visibility: visible;
+                opacity: 1;
+            }
+        }
+
+        /* Coach Analysis Styles */
+        .coach-analysis {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        .analysis-title {
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        .analysis-section {
+            margin-bottom: 12px;
+        }
+        .section-title {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.95em;
+        }
+        .section-title.strengths { color: #2E7D32; }
+        .section-title.development { color: #F57C00; }
+        .section-title.observations { color: #7B1FA2; }
+        .section-title.recommendations { color: #D32F2F; }
+        .analysis-list {
+            margin: 5px 0;
+            padding-left: 15px;
+            line-height: 1.4;
+        }
+        .analysis-list li {
+            margin-bottom: 4px;
+            word-wrap: break-word;
+            display: block;
+        }
+        .analysis-list li br {
+            display: block;
+            content: "";
+            margin-top: 2px;
+        }
+
+        /* Mobile optimizations for coach analysis */
+        @media (max-width: 768px) {
+            .coach-analysis {
+                margin: 15px -10px 0 -10px;
+                padding: 12px;
+                font-size: 0.85em;
+            }
+            .analysis-title {
+                font-size: 1em;
+                margin-bottom: 15px;
+                text-align: center;
+                border-bottom: 2px solid #888;
+                padding-bottom: 8px;
+            }
+            .analysis-section {
+                margin-bottom: 20px;
+                background: rgba(255,255,255,0.7);
+                padding: 12px;
+                border-radius: 6px;
+                border-left: 3px solid #ddd;
+            }
+            .analysis-section:nth-child(2) { border-left-color: #2E7D32; }
+            .analysis-section:nth-child(3) { border-left-color: #F57C00; }
+            .analysis-section:nth-child(4) { border-left-color: #7B1FA2; }
+            .analysis-section:nth-child(5) { border-left-color: #D32F2F; }
+            .section-title {
+                font-size: 0.9em;
+                display: block;
+                margin-bottom: 8px;
+                padding-bottom: 4px;
+                border-bottom: 1px solid #eee;
+            }
+            .analysis-list {
+                padding-left: 0;
+                list-style: none;
+            }
+            .analysis-list li {
+                margin-bottom: 8px;
+                line-height: 1.4;
+                padding: 6px;
+                background: rgba(240,240,240,0.5);
+                border-radius: 4px;
+                border-left: 2px solid #ccc;
+                display: block;
+                white-space: normal;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .coach-analysis {
+                margin: 10px -15px 0 -15px;
+                padding: 10px;
+                font-size: 0.8em;
+            }
+            .analysis-title {
+                font-size: 0.95em;
+                margin-bottom: 12px;
+            }
+            .analysis-section {
+                margin-bottom: 15px;
+                padding: 10px;
+            }
+            .section-title {
+                font-size: 0.85em;
+                margin-bottom: 6px;
+            }
+            .analysis-list li {
+                margin-bottom: 6px;
+                padding: 5px;
+                font-size: 0.9em;
+            }
+        }
+
         .th-agility { background-color: #27ae60; }
         .th-sprint-flying-group { background-color: #2980b9; }
         .th-sprint-standing-group { background-color: #e67e22; }
@@ -240,7 +402,7 @@
 <body>
 
     <div class="container">
-        <h1>Leistungsdaten der Athleten</h1>
+        <h1>U12</h1>
 
         <div class="explanation-box">
             <h3>Erklärung der Gesamtpunktzahl</h3>
@@ -540,6 +702,101 @@
                         </div>
                     </li>`;
             }
+            cardHTML += `</ul>`;
+
+            // Add coach analysis for Bent
+            if (athlete.name === 'Bent') {
+                cardHTML += `
+                    <div class="coach-analysis">
+                        <h4 class="analysis-title">Analyse</h4>
+                        
+                        <div class="analysis-section">
+                            <strong class="section-title strengths">📊 Überdurchschnittliche Bereiche:</strong>
+                            <ul class="analysis-list">
+                                <li><strong>5m fliegend:</strong> 1.36s (Rang 1 von verfügbaren Messungen)</li>
+                                <li><strong>Agilität ohne Ball:</strong> 14.63s (Rang 1 von verfügbaren Messungen)</li>
+                                <li><strong>Beschleunigungsmuster:</strong></li>
+                                <li style="background: #f0f0f0; margin-left: 20px; font-size: 0.9em;">Stehend 0-5m: 4.50 m/s²<br>0-15m: 3.52 m/s² (ungewöhnlicher Anstieg vs 0-10m: 2.72 m/s²)</li>
+                                <li><strong>Geschwindigkeitsanomalie:</strong></li>
+                                <li style="background: #f0f0f0; margin-left: 20px; font-size: 0.9em;">Fliegend 15-30m Segment: 10.20 m/s<br>vs 5-15m: ~6.6 m/s (55% Geschwindigkeitszunahme)</li>
+                            </ul>
+                        </div>
+
+                        <div class="analysis-section">
+                            <strong class="section-title development">📈 Statistische Abweichungen:</strong>
+                            <ul class="analysis-list">
+                                <li><strong>Start-Differenzen:</strong></li>
+                                <li style="background: #f0f0f0; margin-left: 20px; font-size: 0.9em;">5m: +9.6%, 10m: +27.8%, 30m: +11.3%<br>(stehend vs fliegend)</li>
+                                <li><strong>Fehlende Daten:</strong></li>
+                                <li style="background: #f0f0f0; margin-left: 20px; font-size: 0.9em;">Agilität mit Ball (0 von 1 Messungen verfügbar)</li>
+                            </ul>
+                        </div>
+
+                        <div class="analysis-section">
+                            <strong class="section-title observations">🔍 Datenanalyse:</strong>
+                            <ul class="analysis-list">
+                                <li><strong>15m Differenz:</strong></li>
+                                <li style="background: #f0f0f0; margin-left: 20px; font-size: 0.9em;">1.7% (niedrigste Abweichung aller Distanzen)</li>
+                                <li><strong>Spitzenleistung:</strong></li>
+                                <li style="background: #f0f0f0; margin-left: 20px; font-size: 0.9em;">5m fliegend zeigt beste relative Position im Vergleich</li>
+                            </ul>
+                        </div>
+
+                        <div class="analysis-section">
+                            <strong class="section-title recommendations">🎯 Datenbasierte Empfehlungen:</strong>
+                            <ul class="analysis-list">
+                                <li><strong>Startmechanik:</strong></li>
+                                <li style="background: #f0f0f0; margin-left: 20px; font-size: 0.9em;">Fokus auf Verringerung der 27.8% Differenz bei 10m</li>
+                                <li><strong>Datenvervollständigung:</strong></li>
+                                <li style="background: #f0f0f0; margin-left: 20px; font-size: 0.9em;">Agilität mit Ball messen</li>
+                                <li><strong>15m-Anomalie:</strong></li>
+                                <li style="background: #f0f0f0; margin-left: 20px; font-size: 0.9em;">Messung validieren (1.7% ungewöhnlich niedrig)</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }
+
+            cardHTML += `<ul>`;
+
+            // Add difference percentages
+            const agilityNoBall = originalAthlete.agilityNoBall;
+            const agilityWithBall = originalAthlete.agilityWithBall;
+            if (typeof agilityNoBall === 'number' && typeof agilityWithBall === 'number') {
+                const agilityDiff = ((agilityWithBall - agilityNoBall) / agilityNoBall) * 100;
+                cardHTML += `
+                    <li style="background-color: #f3e5f5;" class="tooltip">
+                        <span class="label"><strong>Agilität: Differenz (%)</strong></span>
+                        <div class="result-group">
+                            <span class="value"><strong>${agilityDiff.toFixed(1)}%</strong></span>
+                        </div>
+                        <span class="tooltiptext">Zeigt, wie viel langsamer der Athlet mit Ball ist (höher = größerer Unterschied)</span>
+                    </li>`;
+            }
+
+            // Add sprint differences for each distance
+            const sprintPairs = [
+                { distance: '5m', flying: 'sprint5f', standing: 'sprint5s' },
+                { distance: '10m', flying: 'sprint10f', standing: 'sprint10s' },
+                { distance: '15m', flying: 'sprint15f', standing: 'sprint15s' },
+                { distance: '30m', flying: 'sprint30f', standing: 'sprint30s' }
+            ];
+
+            sprintPairs.forEach(pair => {
+                const flyingValue = originalAthlete[pair.flying];
+                const standingValue = originalAthlete[pair.standing];
+                if (typeof flyingValue === 'number' && typeof standingValue === 'number') {
+                    const sprintDiff = ((standingValue - flyingValue) / flyingValue) * 100;
+                    cardHTML += `
+                        <li style="background-color: #f3e5f5;" class="tooltip">
+                            <span class="label"><strong>Sprint ${pair.distance}: Differenz (%)</strong></span>
+                            <div class="result-group">
+                                <span class="value"><strong>${sprintDiff.toFixed(1)}%</strong></span>
+                            </div>
+                            <span class="tooltiptext">Zeigt, wie viel langsamer der stehende Start ist (höher = größerer Unterschied)</span>
+                        </li>`;
+                }
+            });
             cardHTML += `</ul>`;
             container.innerHTML = cardHTML;
         }
