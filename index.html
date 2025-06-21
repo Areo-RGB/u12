@@ -708,7 +708,10 @@
             if (athlete.name === 'Bent') {
                 cardHTML += `
                     <div class="coach-analysis">
-                        <h4 class="analysis-title">Analyse</h4>
+                        <h4 class="analysis-title" onclick="toggleAnalysis()" style="cursor: pointer; user-select: none;">
+                            <span id="analysis-toggle">▶</span> Analyse
+                        </h4>
+                        <div id="analysis-content" style="display: none;">
                         
                         <div class="analysis-section">
                             <strong class="section-title strengths">📊 Überdurchschnittliche Bereiche:</strong>
@@ -754,6 +757,7 @@
                                 <li><strong>15m-Anomalie:</strong></li>
                                 <li style="background: #f0f0f0; margin-left: 20px; font-size: 0.9em;">Differenz fliegend/stehend nur 1.7% bei 15m vs 9.6% (5m), 27.8% (10m), 11.3% (30m)<br>Normalerweise sollte Differenz konstant oder abnehmend sein - nicht sprunghaft niedriger<br>Berechnete 10.20 m/s für 15-30m Segment bestätigt Messfehler (unrealistisch für U12-Altersklasse)</li>
                             </ul>
+                        </div>
                         </div>
                     </div>
                 `;
@@ -894,6 +898,20 @@
                 }
             });
         });
+
+        // Toggle analysis visibility
+        function toggleAnalysis() {
+            const content = document.getElementById('analysis-content');
+            const toggle = document.getElementById('analysis-toggle');
+            
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                toggle.textContent = '▼';
+            } else {
+                content.style.display = 'none';
+                toggle.textContent = '▶';
+            }
+        }
 
     </script>
 </body>
