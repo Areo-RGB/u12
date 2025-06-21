@@ -850,6 +850,10 @@
             buildLayout(cardContainer, finalAthleteData, correctedData);
             populatePlayerDropdown(playerSelector, finalAthleteData);
 
+            // Set Bent as default selection
+            playerSelector.value = 'Bent';
+            playerSelector.dispatchEvent(new Event('change'));
+
             // Add click handler for leaderboard names
             leaderboardList.addEventListener('click', (e) => {
                 const nameElement = e.target.closest('.name');
