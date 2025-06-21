@@ -850,9 +850,14 @@
             buildLayout(cardContainer, finalAthleteData, correctedData);
             populatePlayerDropdown(playerSelector, finalAthleteData);
 
-            // Set Bent as default selection
+            // Set Bent as default selection and show detail view
             playerSelector.value = 'Bent';
-            playerSelector.dispatchEvent(new Event('change'));
+            const bentData = finalAthleteData.find(a => a.name === 'Bent');
+            const bentOriginalData = correctedData.find(a => a.name === 'Bent');
+            if (bentData && bentOriginalData) {
+                displaySpotlightCard(bentData, spotlightCard, bentOriginalData);
+                spotlightContainer.style.display = 'block';
+            }
 
             // Add click handler for leaderboard names
             leaderboardList.addEventListener('click', (e) => {
